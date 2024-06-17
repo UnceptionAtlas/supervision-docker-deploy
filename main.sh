@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# Function to display the welcome message
+display_welcome() {
+    echo "==========================================="
+    echo "Welcome to the Unception Supervision System"
+    echo "Deployment Script"
+    echo "==========================================="
+    echo
+}
+
 # Function to display the main menu
 display_menu() {
     echo "==== Supervision System Deployment Menu ===="
@@ -24,12 +33,15 @@ display_list_menu() {
 
 # Main script loop
 while true; do
+    clear # Clear the screen for better readability
+    display_welcome
     display_menu
     echo -n "Enter your choice: "
     read -r choice
     case $choice in
         1)
             while true; do
+                clear
                 display_list_menu
                 echo -n "Enter your choice: "
                 read -r list_choice
