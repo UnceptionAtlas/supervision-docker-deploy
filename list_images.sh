@@ -8,7 +8,7 @@ DOCKER_IMAGES=(
     "prom/node-exporter:latest"
 )
 
-# Function to list Docker images
+# Function to list available Docker images
 list_images() {
     echo "Available Docker images for the supervision system:"
     for i in "${!DOCKER_IMAGES[@]}"; do
