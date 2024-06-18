@@ -15,10 +15,7 @@ display_menu() {
     echo "1) List Docker images"
     echo "2) Pull Docker images"
     echo "3) Deploy Docker images"
-    echo "4) Configure Docker containers"
-    echo "5) Check if Docker image is pulled"
-    echo "6) Remove Docker image"
-    echo "7) Exit"
+    echo "4) Exit"
     echo "==========================================="
 }
 
@@ -26,9 +23,35 @@ display_menu() {
 display_list_menu() {
     echo "==== List Docker Images Menu ===="
     echo "1) List pulled images"
-    echo "2) List images that can be pulled"
-    echo "3) Return to main menu"
+    echo "2) Return to main menu"
     echo "================================="
+}
+
+# Function to list Docker images
+list_docker_images() {
+    while true; do
+        clear
+        display_list_menu
+        echo -n "Enter your choice: "
+        read -r list_choice
+        case $list_choice in
+            1) source "$(dirname "$0")/list_pulled_images.sh";;
+            2) break;;
+            *) echo "Invalid choice! Please try again.";;
+        esac
+        echo "Press Enter to continue..."
+        read -r
+    done
+}
+
+# Function to pull Docker images
+pull_docker_images() {
+    source "$(dirname "$0")/pull_images.sh"
+}
+
+# Function to deploy Docker images
+deploy_docker_images() {
+    source "$(dirname "$0")/deploy_images.sh"
 }
 
 # Main script loop
@@ -39,28 +62,10 @@ while true; do
     echo -n "Enter your choice: "
     read -r choice
     case $choice in
-        1)
-            while true; do
-                clear
-                display_list_menu
-                echo -n "Enter your choice: "
-                read -r list_choice
-                case $list_choice in
-                    1) source "$(dirname "$0")/list_pulled_images.sh";;
-                    2) source "$(dirname "$0")/list_images.sh";;
-                    3) break;;
-                    *) echo "Invalid choice! Please try again.";;
-                esac
-                echo "Press Enter to continue..."
-                read -r
-            done
-            ;;
-        2) source "$(dirname "$0")/pull_images.sh";;
-        3) source "$(dirname "$0")/deploy_images.sh";;
-        4) source "$(dirname "$0")/configure_containers.sh";;
-        5) source "$(dirname "$0")/check_image.sh";;
-        6) source "$(dirname "$0")/remove_image.sh";;
-        7) echo "Exiting..."; exit 0;;
+        1) list_docker_images;;
+        2) pull_docker_images;;
+        3) deploy_docker_images;;
+        4) echo "Exiting..."; exit 0;;
         *) echo "Invalid choice! Please try again.";;
     esac
     echo "Press Enter to continue..."
