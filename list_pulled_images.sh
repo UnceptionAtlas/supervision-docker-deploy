@@ -6,12 +6,19 @@ list_pulled_images() {
     echo "-------------------------------------------"
     docker images --format "table {{.ID}}\t{{.Repository}}\t{{.Tag}}\t{{.Size}}"
     echo "-------------------------------------------"
-    
-    echo -n "Do you want to perform an action on any image? (yes/no): "
-    read -r response
-    if [[ "$response" == "yes" ]]; then
-        echo -n "Enter the image ID you want to act on: "
-        read -r image_id
+
+    # Check if there are any pulled images
+    pulled_images=$(docker images --format "{{.ID}}")
+    if [[ -z "$pulled_images" ]]; then
+        echo "No pulled images available."
+        return
+    fi
+
+    echo -n "Enter the image ID you want to act on (or press Enter to skip): "
+    read -r image_id
+
+    # Proceed only if an image ID was entered
+    if [[ -n "$image_id" ]]; then
         check_and_perform_action "$image_id"
     fi
 }
