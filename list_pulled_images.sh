@@ -1,31 +1,61 @@
 #!/bin/bash
 
-# Define remote servers (if any)
-REMOTE_SERVERS=("user@remote-server1" "user@remote-server2")
+# Function to list pulled Docker images
+list_pulled_images() {
+    echo "Pulled Docker images on local machine / remote servers:"
+    echo "-------------------------------------------"
+    docker images --format "table {{.ID}}\t{{.Repository}}\t{{.Tag}}\t{{.Size}}"
+    echo "-------------------------------------------"
 
-# Function to list pulled Docker images on the local machine
-list_local_pulled_images() {
-    echo "Pulled Docker images on local machine:"
-    docker images --format "table {{.Repository}}:{{.Tag}}\t{{.ID}}\t{{.Size}}"
+    # Check if there are any pulled images
+    pulled_images=$(docker images --format "{{.ID}}")
+    if [[ -z "$pulled_images" ]]; then
+        echo "No pulled images available."
+        return
+    fi
+
+    echo -n "Enter the image ID you want to act on (or press Enter to skip): "
+    read -r image_id
+
+    # Proceed only if an image ID was entered
+    if [[ -n "$image_id" ]]; then
+        check_and_perform_action "$image_id"
+    fi
 }
 
-# Function to list pulled Docker images on remote servers
-list_remote_pulled_images() {
-    for server in "${REMOTE_SERVERS[@]}"; do
-        echo "Pulled Docker images on $server:"
-        ssh "$server" "docker images --format 'table {{.Repository}}:{{.Tag}}\t{{.ID}}\t{{.Size}}'"
-    done
+# Function to check if the Docker image exists and list possible actions
+check_and_perform_action() {
+    local image_id="$1"
+    local image_exists=$(docker images --format "{{.ID}}" | grep "^$image_id$")
+
+    if [[ -z "$image_exists" ]]; then
+        echo "Action cannot be performed. Image ID $image_id does not exist."
+        return
+    fi
+
+    local image_status=$(docker inspect --format '{{.State.Status}}' "$image_id" 2>/dev/null)
+    if [[ $? -ne 0 ]]; then
+        image_status="not available"
+    fi
+
+    echo "Image ID $image_id is currently $image_status."
+    echo "Choose an action for image ID $image_id:"
+    echo "1) Start"
+    echo "2) Stop"
+    echo "3) Configure"
+    echo "4) Remove"
+
+    echo -n "Enter your choice: "
+    read -r action_choice
+    case $action_choice in
+        1) docker start "$image_id";;
+        2) docker stop "$image_id";;
+        3) source "$(dirname "$0")/configure_image.sh" "$image_id";;
+        4) docker rmi "$image_id";;
+        *) echo "Invalid choice! Please try again.";;
+    esac
 }
 
-# Prompt user for local or remote
-echo "Choose where to list pulled images:"
-echo "1) Local machine"
-echo "2) Remote servers"
-read -r location_choice
-
-case $location_choice in
-    1) list_local_pulled_images;;
-    2) list_remote_pulled_images;;
-    *) echo "Invalid choice!";;
-esac
+# Main call
+list_pulled_images
 
