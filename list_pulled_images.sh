@@ -17,22 +17,43 @@ list_remote_pulled_images() {
     done
 }
 
+# Function to check if an image ID exists locally
+check_image_exists_local() {
+    local image_id=$1
+    docker images -q | grep -q "^$image_id$"
+}
+
 # Function to perform an action on a Docker image
 perform_action_on_image() {
     echo "Enter the image ID you want to act on:"
     read -r image_id
-    echo "Choose an action for image ID $image_id:"
-    echo "1) Start"
-    echo "2) Stop"
-    echo "3) Remove"
-    read -r action_choice
 
-    case $action_choice in
-        1) docker run -d "$image_id" ;;
-        2) docker stop "$image_id" ;;
-        3) docker rmi -f "$image_id" ;;
-        *) echo "Invalid action!";;
-    esac
+    if check_image_exists_local "$image_id"; then
+        echo "Choose an action for image ID $image_id:"
+        echo "1) Start"
+        echo "2) Stop"
+        echo "3) Remove"
+        read -r action_choice
+
+        case $action_choice in
+            1) 
+                echo "Starting container from image ID $image_id..."
+                docker run -d "$image_id" || echo "Failed to start container from image ID $image_id."
+                ;;
+            2) 
+                echo "Stopping container with image ID $image_id..."
+                docker stop $(docker ps -q --filter ancestor="$image_id") || echo "No running container found for image ID $image_id."
+                ;;
+            3) 
+                echo "Removing image ID $image_id..."
+                docker rmi -f "$image_id" || echo "Failed to remove image ID $image_id."
+                ;;
+            *) 
+                echo "Invalid action!";;
+        esac
+    else
+        echo "Action cannot be performed. Image ID $image_id does not exist."
+    fi
 }
 
 # Prompt user for local or remote
