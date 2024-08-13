@@ -1,51 +1,93 @@
-# Automated Supervision System Deployment with Docker
+# Elasticsearch Setup and Management Scripts
 
-This project provides a bash script to automate the deployment of a supervision system using Docker. It facilitates the management of Docker images and containers for components such as Prometheus, Grafana, Alertmanager, and Node Exporter across remote servers.
+This project contains a collection of Bash scripts to manage the setup, running, and removal of an Elasticsearch Docker container. The scripts are modular and designed to be scalable and extensible.
 
-## Features
+## Table of Contents
 
-- **List** available Docker images for the supervision system.
-- **Pull** specific or all Docker images.
-- **Deploy** Docker images on remote servers with specified configurations.
-- **Configure** Docker containers to tailor the supervision system setup.
+- [Project Structure](#project-structure)
+- [Requirements](#requirements)
+- [Usage](#usage)
+- [Options](#options)
+- [Examples](#examples)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Project Structure
+
+```bash
+elasticsearch_setup/
+├── scripts/
+│   ├── elasticsearch_setup.sh          # Script to set up and start the Elasticsearch container
+│   ├── elasticsearch_remove.sh         # Script to stop and remove the Elasticsearch container and network
+│   ├── elasticsearch_rmi.sh            # Script to remove the Elasticsearch Docker image
+│   ├── elasticsearch_helpers.sh        # Helper functions and utilities
+│   ├── modify_conflist.sh              # Script to modify the CNI configuration
+│   └── elasticsearch_status.sh         # Script to check if the Elasticsearch container is running
+└── elasticsearch.sh                    # Main entry point to execute the scripts
+└── log/                                # Log directory
+    └── elasticsearch.log               # Log file for the operations
+```
+
+## Requirements
+- Docker: Ensure Docker is installed and running on your machine.
+- Bash: These scripts are written for Unix-like environments with Bash.
 
 ## Usage
 
-1. **Clone the Repository**:
-    ```bash
-    git clone https://github.com/yourusername/supervision-docker-deploy.git
-    cd supervision-docker-deploy
-    ```
+The main script elasticsearch.sh is used to manage the Elasticsearch Docker container. The script provides several options to set up, manage, and remove the container and associated resources.
 
-2. **Make the Script Executable**:
-    ```bash
-    chmod +x supervision_deploy.sh
-    ```
+## Options
 
-3. **Run the Script**:
-    ```bash
-    ./supervision_deploy.sh
-    ```
+- setup: Set up and start the Elasticsearch Docker container.
+- remove: Stop and remove the Elasticsearch Docker container and network.
+- rmi: Remove the Elasticsearch Docker image after stopping containers and killing processes on specified ports.
+- status: Check if the Elasticsearch Docker container is up and running.
+help, -h, --help: Display help information.
 
-4. **Follow the On-Screen Menu** to manage Docker images and deploy the supervision system.
+## Examples
 
-## Docker Images Included
+1. **Set up and start Elasticsearch:**
 
-- **Prometheus**: `prom/prometheus:latest`
-- **Grafana**: `grafana/grafana:latest`
-- **Alertmanager**: `prom/alertmanager:latest`
-- **Node Exporter**: `prom/node-exporter:latest`
+```bash
+./elasticsearch.sh setup
+```
 
-## Configuration
+2. **Stop and remove Elasticsearch container and network:**
 
-The script allows for basic container configurations such as port mappings and volume mounts. Extend the configurations as needed for your specific supervision system setup.
+```bash
+./elasticsearch.sh remove
+```
 
-## Requirements
+3. **Remove the Elasticsearch Docker image:**
 
-- Docker installed on the local and remote servers.
-- SSH access to the remote servers.
+```bash
+./elasticsearch.sh rmi
+```
+
+4. **Check if Elasticsearch is running:**
+
+```bash
+./elasticsearch.sh status
+```
+
+5. **Display help information:**
+
+```bash
+./elasticsearch.sh help
+```
+
+## Logs
+
+All operations are logged in the log/elasticsearch.log file. The log directory and file are automatically created if they don't exist.
+
+## Contributing
+
+Contributions are welcome! If you find any issues or have suggestions for improvements, please create an issue or submit a pull request.
 
 ## License
 
-[MIT](LICENSE)
+This project is licensed under the MIT License. See the LICENSE file for details. 
+
+
+This `README.md` provides an overview of the project structure, requirements, usage, and examples. It also includes sections on contributing and licensing. Feel free to customize it according to your specific needs or organizational standards.
 
